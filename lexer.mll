@@ -29,5 +29,6 @@ rule token = parse
   | "if"  { IF }
   | "then"  { THEN }
   | "else"  { ELSE }
+  | '+'   { PLUS }
   | ['A'-'Z''a'-'z']['A'-'Z''a'-'z''0'-'9']* as id { ID (id) }
   | eof		{ raise End_of_file }

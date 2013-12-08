@@ -13,6 +13,7 @@ open Syntax
 %token LPAREN RPAREN COLONEQ COLON SEMICOLON 
 %token LT LE GT GE EQ NE
 %token IF THEN ELSE
+%token PLUS
 
 %start input
 %type  <unit> input
@@ -36,7 +37,7 @@ cond: IF expr THEN expr ELSE expr { printf "if else\n" ; flush stdout }
 	|expr {}
 ;
 
-expr: ID COLONEQ NUM expr {}
+expr: ID COLONEQ expr {}
 	|NUM SEMICOLON expr { printf "%d\n" $1 ; flush stdout  }
 	|NUM { printf "%d\n" $1 ; flush stdout  }
 	|ID LT NUM { printf "LT\n" ; flush stdout }
@@ -45,6 +46,7 @@ expr: ID COLONEQ NUM expr {}
 	|ID GE NUM { printf "GE\n" ; flush stdout }
 	|ID EQ NUM { printf "EQ\n" ; flush stdout }
 	|ID NE NUM { printf "NE\n" ; flush stdout }
+	|NUM PLUS NUM { printf "plus %d %d\n" $1 $3 ; flush stdout }
 	| {}
 ;
 %%

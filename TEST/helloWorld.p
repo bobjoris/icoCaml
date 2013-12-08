@@ -1,7 +1,7 @@
 program
 function f () : integer;
 begin
-	f := 1
+	f := 1 + 1
 end;
 procedure g(x : integer);
 begin
