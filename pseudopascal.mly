@@ -11,16 +11,18 @@ open Syntax;;
 %token BEGIN END DOT
 %token PROGRAM
 %token FUNCTION PROCEDURE VAR
-%token INTEGER BOOLEAN ARRAY OF TYPE
-%token LT LE GT GE EQ NE
+%token INTEGER BOOLEAN ARRAY OF TYPE NEW
+%token LT LE GT GE EQ NE OR AND
 %token LPAREN RPAREN LBRACKET RBRACKET
 %token COLONEQ COLON SEMICOLON COMMA
-%token IF THEN ELSE WHILE DO
+%token IF THEN ELSE WHILE DO 
 %token PLUS MINUS TIMES DIV 
-%token WRITE WRITELN READ
+%token WRITE WRITELN READ READLN
 %token COMMENT
 
 %left LT LE GT GE EQ NE
+%left AND 
+%left OR
 %left PLUS MINUS 
 %left TIMES DIV 
 %nonassoc UMINUS
@@ -34,21 +36,29 @@ open Syntax;;
 input: PROGRAM vars definitions instructions DOT { printf "program\n" ; flush stdout }
 ;
 vars: {}
-	| var SEMICOLON vars {}
+	| VAR var SEMICOLON vars1 {}
 ;
-var: VAR ID COLON type_expr { printf "VAR DEF" ; flush stdout }
+vars1: {}
+	| var SEMICOLON vars1 {}
+;
+var: ID COLON type_expr { printf "VAR DEF %s\n" $1 ; flush stdout }
+	| ID COMMA var { printf "%s COMMA\n" $1 ; flush stdout }
+/*VAR ID COLON type_expr { printf "VAR DEF" ; flush stdout }
+	| ID COLON type_expr { printf "VAR DEF" ; flush stdout } */
 ;
 definitions: /*empty*/ {}
-	|fonctions SEMICOLON commentaire definitions {}
+	|fonctions SEMICOLON definitions {}
 ;
 fonctions: FUNCTION ID LPAREN args RPAREN COLON type_expr SEMICOLON vars instructions { printf "function %s\n" $2; flush stdout }	
 	|PROCEDURE ID LPAREN args RPAREN SEMICOLON vars instructions { printf "procedure %s %s\n" $2 $2 ; flush stdout }	
 ;
 args: {}
-	| ID args1 COLON type_expr { printf "var args1\n" ; flush stdout }
+/*	|var args1 {}*/
+	| ID args1 COLON type_expr { printf "var %s args1\n" $1 ; flush stdout }
+	| ID args1 COLON type_expr SEMICOLON args { printf "var %s args1\n" $1 ; flush stdout }
 ;
 args1: {}
-	| COMMA ID args1 { printf "var args1\n" ; flush stdout}
+	| COMMA ID args1 { printf "COMMA %s args1\n" $2 ; flush stdout}
 ;
 instructions: ID COLONEQ expr {}
 	| BEGIN blocs END { printf "begin end\n" ; flush stdout  }
@@ -61,7 +71,7 @@ instructions: ID COLONEQ expr {}
 	| expr LBRACKET expr RBRACKET COLONEQ expr { printf "seti[]\n" ; flush stdout }
 ;
 commentaire : {}
-	| LBRACKET ID RBRACKET { printf "comment %s\n" $2; flush stdout }
+	| LBRACKET STRING RBRACKET { printf "comment %s\n" $2; flush stdout }
 ;
 blocs: {}
 	| instructions bloc { }
@@ -77,11 +87,13 @@ argument: {}
 ;
 expr: LPAREN expr RPAREN {}
 	| NUM { printf "%d\n" $1 ; flush stdout  }
-	| MINUS NUM %prec UMINUS { printf "-%d\n" $2 ; flush stdout }
+	| MINUS expr /*%prec UMINUS */ { printf "UMINUS\n"  ; flush stdout }
 	| BOOL {}
-	| ID {}
-	| ID LPAREN arguments RPAREN { printf "appel fonction" ; flush stdout }
-	| expr LBRACKET expr RBRACKET { printf "geti" ; flush stdout}
+	| READLN LPAREN RPAREN            { printf "readln\n" ; flush stdout }
+	| NEW type_expr { printf "NEW\n" ; flush stdout}
+	| ID { printf "ID %s\n" $1 }
+	| ID LPAREN arguments RPAREN { printf "appel fonction\n" ; flush stdout }
+	| expr LBRACKET expr RBRACKET { printf "geti\n" ; flush stdout}
 	|expr PLUS expr { printf "PLUS\n" ; flush stdout }
 	|expr MINUS expr { printf "minus\n" ; flush stdout }
 	|expr TIMES expr { printf "fois\n" ; flush stdout }
@@ -92,9 +104,11 @@ expr: LPAREN expr RPAREN {}
 	|expr GE expr { printf "GE\n" ; flush stdout }
 	|expr EQ expr { printf "EQ\n" ; flush stdout }
 	|expr NE expr { printf "NE\n" ; flush stdout }
+	|expr OR expr { printf "OR\n" ; flush stdout }
+	|expr AND expr { printf "AND\n" ; flush stdout }
 ;
-type_expr : INTEGER { printf "INTEGER" ; flush stdout }
-	| BOOLEAN { printf "BOOLEAN" ; flush stdout }
-	| ARRAY OF type_expr { printf "ARRAY OF" ; flush stdout }
+type_expr : INTEGER { printf "INTEGER\n" ; flush stdout }
+	| BOOLEAN { printf "BOOLEAN\n" ; flush stdout }
+	| ARRAY OF type_expr { printf "ARRAY OF\n" ; flush stdout }
 ;
 %%

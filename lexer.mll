@@ -8,12 +8,13 @@ let digit = ['0'-'9']
 
 rule token = parse
   | [' ' '\t' '\n']	{ token lexbuf }
+  | ['{']([^'}'])*['}'] { token lexbuf } 
   | digit+ as num { NUM (int_of_string num) }
   | ';'   { SEMICOLON }  
   | "("   { LPAREN }
   | ")"   { RPAREN }
-  | "{"   { LBRACKET }
-  | "}"   { RBRACKET }
+  | "["   { LBRACKET }
+  | "]"   { RBRACKET }
   | ":="  { COLONEQ } 
   | ":"   { COLON }
   | ","   { COMMA }
@@ -21,6 +22,7 @@ rule token = parse
   | "var"  { VAR }
   | "false"        { BOOL false }
   | "true"         { BOOL true }
+  | "readln"         { READLN }
   | "read"         { READ }
   | "write"        { WRITE }
   | "writeln"      { WRITELN }
@@ -38,7 +40,10 @@ rule token = parse
   | "of"           { OF }
   | "while"           { WHILE }
   | "do"           { DO }
+  | "or"           { OR }
+  | "and"           { AND }
   | "type"         { TYPE }
+  | "new" { NEW }
   | "<"   { LT }
   | "<="  { LE }
   | ">"   { GT }
