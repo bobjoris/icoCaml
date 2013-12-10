@@ -42,6 +42,7 @@ rule token = parse
   | "do"           { DO }
   | "or"           { OR }
   | "and"           { AND }
+  | "not" { NOT}
   | "type"         { TYPE }
   | "new" { NEW }
   | "<"   { LT }

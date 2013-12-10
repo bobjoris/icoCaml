@@ -12,7 +12,7 @@ open Syntax;;
 %token PROGRAM
 %token FUNCTION PROCEDURE VAR
 %token INTEGER BOOLEAN ARRAY OF TYPE NEW
-%token LT LE GT GE EQ NE OR AND
+%token LT LE GT GE EQ NE OR AND NOT
 %token LPAREN RPAREN LBRACKET RBRACKET
 %token COLONEQ COLON SEMICOLON COMMA
 %token IF THEN ELSE WHILE DO 
@@ -21,12 +21,12 @@ open Syntax;;
 %token COMMENT
 
 %left LT LE GT GE EQ NE
-%left AND 
-%left OR
+%left AND OR
 %left PLUS MINUS 
 %left TIMES DIV 
 %nonassoc UMINUS
 %nonassoc LBRACKET 
+%nonassoc NOT
 
 %start input
 %type <unit> input
@@ -35,6 +35,12 @@ open Syntax;;
 %%
 input: PROGRAM vars definitions instructions DOT { printf "program\n" ; flush stdout }
 ;
+/*vars: {}
+	| VAR var SEMICOLON vars1 {}
+;
+vars1: var SEMICOLON {}
+	| var SEMICOLON vars1 {}
+;*/
 vars: {}
 	| VAR var SEMICOLON vars1 {}
 ;
@@ -70,9 +76,9 @@ instructions: ID COLONEQ expr {}
 	| WRITELN LPAREN expr RPAREN    { printf "writeln\n" ; flush stdout }
 	| expr LBRACKET expr RBRACKET COLONEQ expr { printf "seti[]\n" ; flush stdout }
 ;
-commentaire : {}
+/*commentaire : {}
 	| LBRACKET STRING RBRACKET { printf "comment %s\n" $2; flush stdout }
-;
+;*/
 blocs: {}
 	| instructions bloc { }
 ;
@@ -106,6 +112,7 @@ expr: LPAREN expr RPAREN {}
 	|expr NE expr { printf "NE\n" ; flush stdout }
 	|expr OR expr { printf "OR\n" ; flush stdout }
 	|expr AND expr { printf "AND\n" ; flush stdout }
+	|NOT expr { printf "NOT\n" ; flush stdout }
 ;
 type_expr : INTEGER { printf "INTEGER\n" ; flush stdout }
 	| BOOLEAN { printf "BOOLEAN\n" ; flush stdout }

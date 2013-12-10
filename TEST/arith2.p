@@ -44,21 +44,21 @@ begin
    arr := new array of integer [-x/(1-2)];
    s := x;
    
-   while x > 0 { or (x <> 0 and (not (x<0))) } do
+   while x > 0 or (x <> 0 and (not (x<0))) do
    begin
       x := -1 + x;
       e := readln();
       arr[x] := e
    end;
 
-   { arraydouble (arr,s); }
+    arraydouble (arr,s); 
 
-   x := s { ;
+   x := s  ;
     while (not x = 0) and (x > 0 or x >= 0) do
    begin
       x := -1 + x;
       writeln (arr[x])
-   end }
+   end 
 
 end.
 
