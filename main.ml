@@ -4,7 +4,7 @@ let main () =
     let lexbuf = Lexing.from_channel ic in
     (* while true do *)
       let pgm = Pseudopascal.input Lexer.token lexbuf in
-      Printf.printf "OK\n" ; exit 0
+      Printf.printf "Parsing OK\n" ; exit 0
     (* done *)
   with End_of_file -> exit 0
 ;;

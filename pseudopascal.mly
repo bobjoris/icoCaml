@@ -34,7 +34,7 @@ open Syntax;;
 /* Grammar follows */
 %%
 input: PROGRAM vars definitions instructions DOT 
-	{ $2 , $3 , ["instruction"] } /*printf "program\n" ; flush stdout ; */
+	{ $2 , $3 , $4 } /*printf "program\n" ; flush stdout ; */
 ;
 /*vars: {}
 	| VAR var SEMICOLON vars1 {}
@@ -60,9 +60,9 @@ definitions: /*empty*/ { [] }
 	|fonctions SEMICOLON definitions { $1 :: $3 }
 ;
 fonctions: FUNCTION ID LPAREN args RPAREN COLON type_expr SEMICOLON vars instructions 
-		{ $2, ($4, Some $7, $9, $10) } /*printf "function %s\n" $2; flush stdout*/
+		{ $2, ($4, Some $7, $9, $10 ) } /*printf "function %s\n" $2; flush stdout*/
 	|PROCEDURE ID LPAREN args RPAREN SEMICOLON vars instructions 
-		{ $2, ($4, None , $7, $8) } /*printf "procedure %s %s\n" $2 $2 ; flush stdout*/	
+		{ $2, ($4, None , $7, $8 ) } /*printf "procedure %s %s\n" $2 $2 ; flush stdout*/	
 ;
 args: { [] }
 /*	|var args1 {}*/
@@ -72,53 +72,53 @@ args: { [] }
 args1: { [] }
 	| COMMA ID args1 { $2 :: $3 } /*printf "COMMA %s args1\n" $2 ; flush stdout*/
 ;
-instructions: ID COLONEQ expr { "test" }
-	| BEGIN blocs END { "test" }
-	| IF expr THEN instructions ELSE instructions { "test" }
-	| WHILE expr DO instructions { "test" }
-	| ID LPAREN arguments RPAREN { "test" }
-	| READ LPAREN ID RPAREN            { "test" }
-	| WRITE LPAREN expr RPAREN      { "test" }
-	| WRITELN LPAREN expr RPAREN    { "test" }
-	| expr LBRACKET expr RBRACKET COLONEQ expr { "test" }
+instructions: ID COLONEQ expr { Set ($1, $3) }
+	| BEGIN blocs END { Sequence $2 }
+	| IF expr THEN instructions ELSE instructions { If ($2, $4, $6) }
+	| WHILE expr DO instructions { While ($2, $4) }
+	| ID LPAREN arguments RPAREN { Procedure_call ($1, $3) }
+	| READ LPAREN ID RPAREN            { Read ($3) }
+	| WRITE LPAREN expr RPAREN      { Write ($3) }
+	| WRITELN LPAREN expr RPAREN    { Writeln ($3) }
+	| expr LBRACKET expr RBRACKET COLONEQ expr { Seti ($1, $3, $6) }
 ;
 /*commentaire : {}
 	| LBRACKET STRING RBRACKET { printf "comment %s\n" $2; flush stdout }
 ;*/
-blocs: {}
-	| instructions bloc { }
+blocs: { [] }
+	| instructions bloc { $1 :: $2 }
 ;
-bloc: {}
-	| SEMICOLON instructions bloc {}
+bloc: { [] }
+	| SEMICOLON instructions bloc { $2 :: $3 }
 ;
-arguments: {}
-	| expr argument {}
+arguments: { [] }
+	| expr argument { $1 :: $2 }
 ;
-argument: {}
-	| COMMA expr argument {}
+argument: { [] }
+	| COMMA expr argument { $2 :: $3 }
 ;
-expr: LPAREN expr RPAREN {}
-	| NUM { printf "%d\n" $1 ; flush stdout  }
-	| MINUS expr /*%prec UMINUS */ { printf "UMINUS\n"  ; flush stdout }
-	| BOOL {}
-	| READLN LPAREN RPAREN            { printf "readln\n" ; flush stdout }
-	| NEW type_expr { printf "NEW\n" ; flush stdout}
-	| ID { printf "ID %s\n" $1 }
-	| ID LPAREN arguments RPAREN { printf "appel fonction\n" ; flush stdout }
-	| expr LBRACKET expr RBRACKET { printf "geti\n" ; flush stdout}
-	|expr PLUS expr { printf "PLUS\n" ; flush stdout }
-	|expr MINUS expr { printf "minus\n" ; flush stdout }
-	|expr TIMES expr { printf "fois\n" ; flush stdout }
-	|expr DIV expr { printf "div\n" ; flush stdout }
-	|expr LT expr { printf "LT\n" ; flush stdout }
-	|expr LE expr { printf "LE\n" ; flush stdout }
-	|expr GT expr { printf "GT\n" ; flush stdout }
-	|expr GE expr { printf "GE\n" ; flush stdout }
-	|expr EQ expr { printf "EQ\n" ; flush stdout }
-	|expr NE expr { printf "NE\n" ; flush stdout }
-	|expr OR expr { printf "OR\n" ; flush stdout }
-	|expr AND expr { printf "AND\n" ; flush stdout }
-	|NOT expr { printf "NOT\n" ; flush stdout }
+expr: LPAREN expr RPAREN { $2 }
+	| NUM { Int $1  }
+	| MINUS expr /*%prec UMINUS */ { Un (UMinus, $2) }
+	| BOOL {Bool $1 }
+	| READLN LPAREN RPAREN { Readln }
+	| NEW type_expr { New $2 }
+	| ID { Get $1 }
+	| ID LPAREN arguments RPAREN { Function_call ($1, $3) }
+	| expr LBRACKET expr RBRACKET { Geti ($1, $3) }
+	|expr PLUS expr { Bin (Plus, $1, $3) }
+	|expr MINUS expr { Bin (Minus, $1, $3)}
+	|expr TIMES expr { Bin (Times, $1, $3) }
+	|expr DIV expr { Bin (Div, $1, $3) }
+	|expr LT expr { Bin (Lt, $1, $3) }
+	|expr LE expr { Bin (Le, $1, $3) }
+	|expr GT expr { Bin (Gt, $1, $3) }
+	|expr GE expr { Bin (Ge, $1, $3) }
+	|expr EQ expr { Bin (Eq, $1, $3) }
+	|expr NE expr { Bin (Ne, $1, $3) }
+	|expr OR expr { Bin (Or, $1, $3) }
+	|expr AND expr { Bin (And, $1, $3) }
+	|NOT expr { Un (Not, $2) }
 ;
 type_expr : INTEGER { Integer } /*printf "INTEGER\n" ; flush stdout*/
 	| BOOLEAN { Boolean } /*printf "BOOLEAN\n" ; flush stdout*/

@@ -2,11 +2,51 @@
 type type_expr = Integer | Boolean | Array of type_expr;;
 type var_list = ((string list)* type_expr) list;;
 
-type instruction = string ;;
-type definition = var_list * type_expr option * var_list * instruction ;;
-type definition1 = string * int ;;
+type unop =
+  | UMinus | Not ;;
 
-type program = var_list * ((string * definition) list) * (instruction list) ;;
+type binop =
+  | Plus | Minus | Times | Div
+    (* arithmétique *)
+  | Or | And 
+  | Lt | Le | Gt | Ge | Eq | Ne ;;
+    (* comparaisons *) 
+
+type expression =
+  | Int of int | Bool of bool
+    (* constantes *)
+  | Un of unop * expression
+    (* expressions arithétiques *)
+  | Bin of binop * expression * expression
+    (* expressions arithétiques *)
+  | Get of string
+    (* accès à une variable *)
+  | Function_call of string * expression list
+    (* appel de fonction *)
+  | Geti of expression * expression
+    (* accès dans un tableau à une position *)
+  | New of type_expr
+    (* Création d'un objet d'un certain type *)
+  | Readln ;;
+
+type instruction =  
+  | Set of string * expression
+    (* Affectation d'une variable *)
+  | Sequence of instruction list
+    (* Suite d'instructions *)
+  | If of expression * instruction * instruction
+  | While of expression * instruction
+  | Procedure_call of string * expression list
+    (* Appel de procédure *)
+  | Write of expression
+  | Writeln of expression
+    (* Ecriture d'un entier sans ou avec retour à la ligne *)
+  | Read of string
+    (* Affectation dans un tableau *)
+  | Seti of expression * expression * expression ;;
+type definition = var_list * type_expr option * var_list * instruction ;;
+
+type program = var_list * ((string * definition) list) * instruction ;;
 (* {
      global_vars : var_list; 
     (* variables globales *)
