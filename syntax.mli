@@ -1,9 +1,14 @@
 (* Syntaxe abstraite des expression de type *)
 type type_expr = Integer | Boolean | Array of type_expr;;
-type var_list = (string * type_expr) list;;
+type var_list = ((string list)* type_expr) list;;
 
-type program = {
-    global_vars : var_list; 
+type instruction = string ;;
+type definition = var_list * type_expr option * var_list * instruction ;;
+type definition1 = string * int ;;
+
+type program = var_list * ((string * definition) list) * (instruction list) ;;
+(* {
+     global_vars : var_list; 
     (* variables globales *)
     definitions : (string * definition) list;
     (* fonctions et procédures globales *)
@@ -29,7 +34,7 @@ and expression =
   | Function_call of string * expression list
     (* appel de fonction *)
   | Geti of expression * expression
-    (* accès dans un tableau à une position *)
+    accès dans un tableau à une position
   | Alloc of expression * type_expr
     (* Création d'un tableau d'une certaine taille *)
 
@@ -54,3 +59,4 @@ and instruction =
   | Read_int of string
     (* Affectation dans un tableau *)
   | Seti of expression * expression * expression
+ *)

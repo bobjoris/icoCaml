@@ -29,11 +29,12 @@ open Syntax;;
 %nonassoc NOT
 
 %start input
-%type <unit> input
+%type <Syntax.program> input
 
 /* Grammar follows */
 %%
-input: PROGRAM vars definitions instructions DOT { printf "program\n" ; flush stdout }
+input: PROGRAM vars definitions instructions DOT 
+	{ $2 , $3 , ["instruction"] } /*printf "program\n" ; flush stdout ; */
 ;
 /*vars: {}
 	| VAR var SEMICOLON vars1 {}
@@ -41,40 +42,45 @@ input: PROGRAM vars definitions instructions DOT { printf "program\n" ; flush st
 vars1: var SEMICOLON {}
 	| var SEMICOLON vars1 {}
 ;*/
-vars: {}
-	| VAR var SEMICOLON vars1 {}
+vars: { [] }
+	| VAR var SEMICOLON vars1 { $2 :: $4 }
 ;
-vars1: {}
-	| var SEMICOLON vars1 {}
+vars1: { [] }
+	| var SEMICOLON vars1 { $1 :: $3 }
 ;
-var: ID COLON type_expr { printf "VAR DEF %s\n" $1 ; flush stdout }
-	| ID COMMA var { printf "%s COMMA\n" $1 ; flush stdout }
+var: idlist COLON type_expr { $1 , $3 } /*printf "VAR DEF %s\n" $1 ; flush stdout */
+	/*| ID COMMA var { $1 :: $3 } printf "%s COMMA\n" $1 ; flush stdout*/
 /*VAR ID COLON type_expr { printf "VAR DEF" ; flush stdout }
 	| ID COLON type_expr { printf "VAR DEF" ; flush stdout } */
 ;
-definitions: /*empty*/ {}
-	|fonctions SEMICOLON definitions {}
+idlist: ID { [$1] }
+	| ID COMMA idlist { $1 :: $3 }
 ;
-fonctions: FUNCTION ID LPAREN args RPAREN COLON type_expr SEMICOLON vars instructions { printf "function %s\n" $2; flush stdout }	
-	|PROCEDURE ID LPAREN args RPAREN SEMICOLON vars instructions { printf "procedure %s %s\n" $2 $2 ; flush stdout }	
+definitions: /*empty*/ { [] }
+	|fonctions SEMICOLON definitions { $1 :: $3 }
 ;
-args: {}
+fonctions: FUNCTION ID LPAREN args RPAREN COLON type_expr SEMICOLON vars instructions 
+		{ $2, ($4, Some $7, $9, $10) } /*printf "function %s\n" $2; flush stdout*/
+	|PROCEDURE ID LPAREN args RPAREN SEMICOLON vars instructions 
+		{ $2, ($4, None , $7, $8) } /*printf "procedure %s %s\n" $2 $2 ; flush stdout*/	
+;
+args: { [] }
 /*	|var args1 {}*/
-	| ID args1 COLON type_expr { printf "var %s args1\n" $1 ; flush stdout }
-	| ID args1 COLON type_expr SEMICOLON args { printf "var %s args1\n" $1 ; flush stdout }
+	| ID args1 COLON type_expr { [($1 :: $2 , $4)] } /*printf "var  args1\n"  ; flush stdout*/
+	| ID args1 COLON type_expr SEMICOLON args { ($1 :: $2 , $4) :: $6 } /*printf "var  args1\n"  ; flush stdout*/
 ;
-args1: {}
-	| COMMA ID args1 { printf "COMMA %s args1\n" $2 ; flush stdout}
+args1: { [] }
+	| COMMA ID args1 { $2 :: $3 } /*printf "COMMA %s args1\n" $2 ; flush stdout*/
 ;
-instructions: ID COLONEQ expr {}
-	| BEGIN blocs END { printf "begin end\n" ; flush stdout  }
-	| IF expr THEN instructions ELSE instructions { printf "if else\n" ; flush stdout }
-	| WHILE expr DO instructions { printf "while do\n" ; flush stdout }
-	| ID LPAREN arguments RPAREN { printf "appel proc\n" ; flush stdout }
-	| READ LPAREN ID RPAREN            { printf "read\n" ; flush stdout }
-	| WRITE LPAREN expr RPAREN      { printf "write\n" ; flush stdout }
-	| WRITELN LPAREN expr RPAREN    { printf "writeln\n" ; flush stdout }
-	| expr LBRACKET expr RBRACKET COLONEQ expr { printf "seti[]\n" ; flush stdout }
+instructions: ID COLONEQ expr { "test" }
+	| BEGIN blocs END { "test" }
+	| IF expr THEN instructions ELSE instructions { "test" }
+	| WHILE expr DO instructions { "test" }
+	| ID LPAREN arguments RPAREN { "test" }
+	| READ LPAREN ID RPAREN            { "test" }
+	| WRITE LPAREN expr RPAREN      { "test" }
+	| WRITELN LPAREN expr RPAREN    { "test" }
+	| expr LBRACKET expr RBRACKET COLONEQ expr { "test" }
 ;
 /*commentaire : {}
 	| LBRACKET STRING RBRACKET { printf "comment %s\n" $2; flush stdout }
@@ -114,8 +120,8 @@ expr: LPAREN expr RPAREN {}
 	|expr AND expr { printf "AND\n" ; flush stdout }
 	|NOT expr { printf "NOT\n" ; flush stdout }
 ;
-type_expr : INTEGER { printf "INTEGER\n" ; flush stdout }
-	| BOOLEAN { printf "BOOLEAN\n" ; flush stdout }
-	| ARRAY OF type_expr { printf "ARRAY OF\n" ; flush stdout }
+type_expr : INTEGER { Integer } /*printf "INTEGER\n" ; flush stdout*/
+	| BOOLEAN { Boolean } /*printf "BOOLEAN\n" ; flush stdout*/
+	| ARRAY OF type_expr { Array ($3) } /*printf "ARRAY OF\n" ; flush stdout*/
 ;
 %%
