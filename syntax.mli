@@ -27,6 +27,7 @@ type expression =
     (* accès dans un tableau à une position *)
   | New of type_expr
     (* Création d'un objet d'un certain type *)
+  | Read
   | Readln ;;
 
 type instruction =  
@@ -41,12 +42,15 @@ type instruction =
   | Write of expression
   | Writeln of expression
     (* Ecriture d'un entier sans ou avec retour à la ligne *)
-  | Read of string
     (* Affectation dans un tableau *)
   | Seti of expression * expression * expression ;;
-type definition = var_list * type_expr option * var_list * instruction ;;
 
-type program = var_list * ((string * definition) list) * instruction ;;
+  
+type definition = Definition of var_list * type_expr option * var_list * instruction ;;
+
+type func_def = Func_def of string * definition;;
+
+type program = Program of var_list * (func_def list) * instruction ;;
 (* {
      global_vars : var_list; 
     (* variables globales *)

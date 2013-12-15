@@ -34,7 +34,7 @@ open Syntax;;
 /* Grammar follows */
 %%
 input: PROGRAM vars definitions instructions DOT 
-	{ $2 , $3 , $4 } /*printf "program\n" ; flush stdout ; */
+	{ Program($2 , $3 , $4) } /*printf "program\n" ; flush stdout ; */
 ;
 /*vars: {}
 	| VAR var SEMICOLON vars1 {}
@@ -60,9 +60,9 @@ definitions: /*empty*/ { [] }
 	|fonctions SEMICOLON definitions { $1 :: $3 }
 ;
 fonctions: FUNCTION ID LPAREN args RPAREN COLON type_expr SEMICOLON vars instructions 
-		{ $2, ($4, Some $7, $9, $10 ) } /*printf "function %s\n" $2; flush stdout*/
+		{ Func_def($2, Definition($4, Some $7, $9, $10 )) } /*printf "function %s\n" $2; flush stdout*/
 	|PROCEDURE ID LPAREN args RPAREN SEMICOLON vars instructions 
-		{ $2, ($4, None , $7, $8 ) } /*printf "procedure %s %s\n" $2 $2 ; flush stdout*/	
+		{ Func_def($2, Definition($4, None , $7, $8 )) } /*printf "procedure %s %s\n" $2 $2 ; flush stdout*/	
 ;
 args: { [] }
 /*	|var args1 {}*/
@@ -77,7 +77,7 @@ instructions: ID COLONEQ expr { Set ($1, $3) }
 	| IF expr THEN instructions ELSE instructions { If ($2, $4, $6) }
 	| WHILE expr DO instructions { While ($2, $4) }
 	| ID LPAREN arguments RPAREN { Procedure_call ($1, $3) }
-	| READ LPAREN ID RPAREN            { Read ($3) }
+	/*| READ LPAREN ID RPAREN            { Read ($3) } */
 	| WRITE LPAREN expr RPAREN      { Write ($3) }
 	| WRITELN LPAREN expr RPAREN    { Writeln ($3) }
 	| expr LBRACKET expr RBRACKET COLONEQ expr { Seti ($1, $3, $6) }
@@ -101,7 +101,8 @@ expr: LPAREN expr RPAREN { $2 }
 	| NUM { Int $1  }
 	| MINUS expr /*%prec UMINUS */ { Un (UMinus, $2) }
 	| BOOL {Bool $1 }
-	| READLN LPAREN RPAREN { Readln }
+	| READ LPAREN RPAREN         	{ Read }
+	| READLN LPAREN RPAREN       	{ Readln }
 	| NEW type_expr { New $2 }
 	| ID { Get $1 }
 	| ID LPAREN arguments RPAREN { Function_call ($1, $3) }

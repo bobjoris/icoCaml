@@ -2,6 +2,8 @@ pseudopascal.cmo: pseudopascal.cmi
 pseudopascal.cmx: pseudopascal.cmi 
 lexer.cmo: pseudopascal.cmi 
 lexer.cmx: pseudopascal.cmx 
-main.cmo: lexer.cmo 
-main.cmx: lexer.cmx 
+middleEnd.cmo: lexer.cmo
+middleEnd.cmx: lexer.cmx
+main.cmo: lexer.cmo middleEnd.cmo
+main.cmx: lexer.cmx middleEnd.cmx
 pseudopascal.cmi: syntax.cmi 
