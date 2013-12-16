@@ -1,3 +1,4 @@
+(* Ecrit un couple fonction -> appel fils *)
 let print_call_graph_couple i f init =
     init^"  "^i^" -> "^f^";\n"
 ;;

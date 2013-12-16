@@ -7,42 +7,28 @@ type unop =
 
 type binop =
   | Plus | Minus | Times | Div
-    (* arithmétique *)
   | Or | And 
   | Lt | Le | Gt | Ge | Eq | Ne ;;
-    (* comparaisons *) 
 
 type expression =
   | Int of int | Bool of bool
-    (* constantes *)
   | Un of unop * expression
-    (* expressions arithétiques *)
   | Bin of binop * expression * expression
-    (* expressions arithétiques *)
   | Get of string
-    (* accès à une variable *)
   | Function_call of string * expression list
-    (* appel de fonction *)
   | Geti of expression * expression
-    (* accès dans un tableau à une position *)
   | New of type_expr
-    (* Création d'un objet d'un certain type *)
   | Read
   | Readln ;;
 
 type instruction =  
   | Set of string * expression
-    (* Affectation d'une variable *)
   | Sequence of instruction list
-    (* Suite d'instructions *)
   | If of expression * instruction * instruction
   | While of expression * instruction
   | Procedure_call of string * expression list
-    (* Appel de procédure *)
   | Write of expression
   | Writeln of expression
-    (* Ecriture d'un entier sans ou avec retour à la ligne *)
-    (* Affectation dans un tableau *)
   | Seti of expression * expression * expression ;;
 
   

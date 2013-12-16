@@ -41,7 +41,10 @@ let rec make_call_graph_fonct fonctions graph_appel =
     | _ -> ()
 ;;
 
+
+
 let make_call_graph abr_syntaxe = 
+    (* Création de la table de hash pour stocker les couples de fonctions appelant/appeler *)
 	let t_hash = Hashtbl.create 100 in
 		match abr_syntaxe with
 	| Program(var_decl, fonctions, instructions) -> make_call_graph_fonct fonctions t_hash ; 
