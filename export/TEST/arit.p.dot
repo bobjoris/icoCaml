@@ -1,5 +1,7 @@
 digraph TEST/arit.p
-{  program -> coucou;
+{
+ program;
+  program -> coucou;
   program -> readln;
   coucou -> writeln;
 }

@@ -1,24 +1,26 @@
 open Syntax;;
 
-let rec remove_dups lst= match lst with 
+let rec remove_dups lst = 
+    match lst with 
     | [] -> []
     | h::t -> h::(remove_dups (List.filter (fun x -> x<>h) t))
 ;;
 
 
-let rec make_call_graph_expr l = 
-    match l with
+let rec make_call_graph_expr expr = 
+    match expr with
     | Un(u,e) -> make_call_graph_expr e
     | Bin(b,e1,e2) -> (make_call_graph_expr e1) @ (make_call_graph_expr e2)
     | Function_call(s,e::el) -> (make_call_graph_expr e) @ (make_call_graph_expr (Function_call(s,el))) @ [s]
     | Function_call(s,_) -> [s]
     | Geti(e1,e2) -> (make_call_graph_expr e1) @ (make_call_graph_expr e2)
+    | Read -> ["read"]
     | Readln -> ["readln"]
     | _ -> []
 ;;
 
-let rec make_call_graph_instr l = 
-    match l with
+let rec make_call_graph_instr instr = 
+    match instr with
     | Sequence(i::l) ->  (make_call_graph_instr i) @ (make_call_graph_instr (Sequence(l)))
     | Set(s,e) -> (make_call_graph_expr e)
     | If(e,i1,i2) -> (make_call_graph_expr e) @ (make_call_graph_instr i1) @ (make_call_graph_instr i2)
@@ -34,8 +36,8 @@ let rec make_call_graph_instr l =
 
 let rec make_call_graph_fonct fonctions graph_appel = 
 	match fonctions with
-	| Func_def(n, Definition(w,x,c,i))::r -> make_call_graph_fonct r graph_appel ; 
-                           (List.iter (Hashtbl.add graph_appel n) (remove_dups(make_call_graph_instr i)))
+	| Func_def(nom, Definition(w,x,c,instr))::r -> make_call_graph_fonct r graph_appel ; 
+                           (List.iter (Hashtbl.add graph_appel nom) (remove_dups(make_call_graph_instr instr)))
     | _ -> ()
 ;;
 
