@@ -1,5 +1,0 @@
-digraph TEST/debile.p
-{
- program;
-  debile -> debile;
-}

@@ -1,6 +1,0 @@
-digraph TEST/helloWorld.p
-{  program -> g;
-  program -> f;
-  g -> g;
-  g -> f;
-}

@@ -1,8 +1,0 @@
-digraph TEST/arith2.p
-{
- program;
-  arraydouble -> double;
-  program -> writeln;
-  program -> arraydouble;
-  program -> readln;
-}

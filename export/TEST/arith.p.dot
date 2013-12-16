@@ -1,5 +1,0 @@
-digraph TEST/arith.p
-{
- program;
-  program -> writeln;
-}
