@@ -4,6 +4,6 @@ lexer.cmo: pseudopascal.cmi
 lexer.cmx: pseudopascal.cmx 
 middleEnd.cmo: lexer.cmo
 middleEnd.cmx: lexer.cmx
-main.cmo: lexer.cmo middleEnd.cmo
-main.cmx: lexer.cmx middleEnd.cmx
+main.cmo: lexer.cmo middleEnd.cmo backEnd.cmo
+main.cmx: lexer.cmx middleEnd.cmx backEnd.cmx
 pseudopascal.cmi: syntax.cmi 

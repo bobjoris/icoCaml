@@ -46,16 +46,3 @@ let make_call_graph abr_syntaxe =
                       (List.iter (Hashtbl.add t_hash "program") (remove_dups(make_call_graph_instr instructions))) ; 
                       t_hash
 ;;
-
-
-let print_call_graph_couple i f init =
-    init^"  "^i^" -> "^f^";\n"
-;;
-
-
-let print_call_graph graphe_appel nom_fichier =
- let fichier_dot = open_out ("export/"^nom_fichier^".dot") in
- output_string fichier_dot ("digraph "^ nom_fichier ^"\n{");
- output_string fichier_dot (Hashtbl.fold print_call_graph_couple graphe_appel "");
- output_string fichier_dot "}\n"; 
- close_out fichier_dot;; 

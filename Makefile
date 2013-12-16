@@ -2,11 +2,11 @@ TARGET = pseudopascal
 
 all: pseudopascal clean
 
-pseudopascal: lexer.cmo pseudopascal.cmo middleEnd.cmo main.cmo
-	ocamlc -o $@ lexer.cmo pseudopascal.cmo middleEnd.cmo main.cmo
+pseudopascal: lexer.cmo pseudopascal.cmo middleEnd.cmo backEnd.cmo main.cmo
+	ocamlc -o $@ lexer.cmo pseudopascal.cmo middleEnd.cmo backEnd.cmo main.cmo
 
 clean:
-	rm -rf pseudopascal.ml pseudopascal.mli lexer.ml lexer.cmi lexer.cmo main.cmi main.cmo pseudopascal.cmi pseudopascal.cmo syntax.cmi middleEnd.cmo middleEnd.cmi
+	rm -rf pseudopascal.ml pseudopascal.mli lexer.ml lexer.cmi lexer.cmo main.cmi main.cmo pseudopascal.cmi pseudopascal.cmo syntax.cmi middleEnd.cmo middleEnd.cmi backEnd.cmo backEnd.cmi
 
 depend:
 	ocamldep *.ml *.mli > .depend
