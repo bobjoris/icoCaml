@@ -1,5 +1,7 @@
-(* Syntaxe abstraite des expression de type *)
+(* Syntaxe abstraite du pseudo-pascal *)
+
 type type_expr = Integer | Boolean | Array of type_expr;;
+
 type var_list = ((string list)* type_expr) list;;
 
 type unop =
